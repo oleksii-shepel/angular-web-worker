@@ -118,7 +118,7 @@ class TestClass implements OnWorkerInit {
 
 
 class FakeWorker implements Worker {
-
+    onmessageerror(this: Worker, ev: MessageEvent) { }
     onmessage(ev: MessageEvent) { }
     onerror(err: any) { }
     postMessage(resp: any) { }
@@ -246,7 +246,7 @@ describe('WorkerClient: [angular-web-worker/angular]', () => {
             };
             const spy = spyOn(client['responseEvent'], 'next');
             worker.onmessage(event(evt));
-            expect(spy).toHaveBeenCalledWith(evt);
+            expect(spy).toHaveBeenCalledWith(evt as any);
         });
 
         it('Should trigger the observable subject when a next event is recieved through an ObservableMessage event', () => {
