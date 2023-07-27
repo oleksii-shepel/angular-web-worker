@@ -74,6 +74,13 @@ export class ClientWebWorker<T> implements Worker {
      * Ensures class conforms to the native `Worker` class
      * @NotImplemented
      */
+    onmessageerror(this: Worker, ev: MessageEvent) {      
+    }
+    
+    /**
+     * Ensures class conforms to the native `Worker` class
+     * @NotImplemented
+     */
     onerror(err: any) {
     }
 
