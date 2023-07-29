@@ -806,8 +806,9 @@ describe('WorkerClient: [angular-web-worker/angular]', () => {
 
         it('Should resolve with the newly created subscription', () => {
             const subject = new Subject<any>();
-            PrivateClientUtils.observables(client)['subscription-key'] = { propertyName: 'event', subject: subject, subscription: subject.subscribe(), observable: null };
-            expect(opts.resolve(response({ propertyName: 'event' }), secretResult(client), 'subscription-key')).toEqual(subject.subscribe());
+            const subscription = subject.subscribe();
+            PrivateClientUtils.observables(client)['subscription-key'] = { propertyName: 'event', subject: subject, subscription: subscription, observable: null };
+            expect(opts.resolve(response({ propertyName: 'event' }), secretResult(client), 'subscription-key')).toEqual(subscription);
         });
 
         describe('createSubscription()', () => {
@@ -832,7 +833,8 @@ describe('WorkerClient: [angular-web-worker/angular]', () => {
             it('The subscription should subscribe the subject and act on the next event', () => {
                 const spy = spyOn(subscriptionMethods, 'next');
                 const key = client['createSubscription']('event', subscriptionMethods.next);
-                PrivateClientUtils.observables(client)[key].subject.next();
+                console.log(PrivateClientUtils.observables(client)[key].subject);
+                PrivateClientUtils.observables(client)[key].subject.next(true);
                 expect(spy).toHaveBeenCalled();
             });
 
@@ -969,7 +971,7 @@ describe('WorkerClient: [angular-web-worker/angular]', () => {
 });
 
 async function sleep(time) {
-    return new Promise(resolve => {
+    return new Promise<void>(resolve => {
         setTimeout(() => {
             resolve();
         }, time);
