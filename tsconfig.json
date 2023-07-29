@@ -15,9 +15,6 @@
       "node_modules/@types"
     ],
     "paths": {
-      "angular-web-worker": [
-        "./worker/src/public-api.ts"
-      ],
       "angular-web-worker/angular": [
         "./angular/src/public-api.ts"
       ],
@@ -26,6 +23,9 @@
       ],
       "angular-web-worker/*": [
         "./dist/*"
+      ],
+      "angular-web-worker": [
+        "./worker/src/public-api.ts"
       ]
     }
   },
