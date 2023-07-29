@@ -32,6 +32,7 @@ export class ClientWebWorker<T> implements Worker {
         };
         this.controller = new WorkerController(workerType, this.messageBus);
     }
+    onmessageerror: (this: Worker, ev: MessageEvent<any>) => any;
 
     /**
      * Returns instance of worker class
@@ -70,13 +71,6 @@ export class ClientWebWorker<T> implements Worker {
     }
 
 
-    /**
-     * Ensures class conforms to the native `Worker` class
-     * @NotImplemented
-     */
-    onmessageerror(this: Worker, ev: MessageEvent) {      
-    }
-    
     /**
      * Ensures class conforms to the native `Worker` class
      * @NotImplemented
