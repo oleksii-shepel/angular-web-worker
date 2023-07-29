@@ -4,10 +4,17 @@ const path = require('path');
 module.exports = function (config) {
     config.set({
         basePath: '',
-        frameworks: ['jasmine'],
+        frameworks: ['webpack', 'jasmine'],
         files: [
             './tests.ts',
-            "**/*.spec.ts"
+            './angular/test/*.spec.ts',
+            './common/test/*.spec.ts',
+            './testing/test/*.spec.ts',
+            './worker/test/*.spec.ts'
+        ],
+        exclude: [
+            './node_modules',
+            './dist'
         ],
         mode: 'development',
         reporters: ['kjhtml'],
@@ -15,14 +22,10 @@ module.exports = function (config) {
             '**/*.ts': ['webpack']
         },
         webpack: {
-            node: {
-                fs: 'empty',
-                child_process: 'empty'
-            },
             resolve: {
                 extensions: ['.js', '.ts', '.tsx'],
                 plugins: [
-                    new TsconfigPathsPlugin({ configFile: "./tsconfig.spec.json" })
+                    new TsconfigPathsPlugin({ configFile: './tsconfig.spec.json' })
                 ],
                 alias: {
                     'angular-web-worker/common': path.resolve(__dirname, 'common/src/public-api.ts'),
@@ -40,7 +43,7 @@ module.exports = function (config) {
                         use: {
                             loader: 'ts-loader',
                             options: {
-                                configFile: "tsconfig.spec.json"
+                                configFile: 'tsconfig.spec.json'
                             }
                         }
                     },
@@ -48,7 +51,7 @@ module.exports = function (config) {
             },
         },
         port: 9867,
-        browsers: ['chrome'],
+        browsers: ['Chrome'],
         logLevel: config.LOG_INFO,
         colors: true,
         client: {
@@ -58,7 +61,6 @@ module.exports = function (config) {
             reports: ['html', 'lcovonly']
         },
         autoWatch: true,
-        browsers: ['Chrome'],
         singleRun: false
     });
 };
