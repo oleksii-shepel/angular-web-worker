@@ -54,13 +54,13 @@ export interface WorkerClientRequestOpts<T, EventType extends number, ReturnType
     /**
      * Any conditions that need to be met, in addition to the correct `SecretResult`, before a request can be made to the worker
      */
-    additionalConditions?: { if: (secretResult?: SecretResult<EventType>) => boolean, reject: (secretResult?: SecretResult<EventType>) => any }[];
+    additionalConditions?: { if: (secretResult: SecretResult<EventType> | null) => boolean, reject: (secretResult: SecretResult<EventType> | null) => any }[];
     /**
      * A placeholder to perform unique work in the more generic `WorkerClient.sendRequest()` method. This occurs immediately before the client sends the request to
      * the worker and after the `SecretKey` is validated, along with any `additionalConditions` if the option was specified. The value returned
      * by this function is available for use through the `additionalContext` arguments in the `body`, `resolve` and `beforeReject` options' functions
      */
-    beforeRequest?: (secretResult?: SecretResult<EventType>) => any;
+    beforeRequest?: (secretResult: SecretResult<EventType> | null) => any;
     /**
      * Must return the `WorkerRequestEvent.body` that will be sent to the worker.  The structure is determined by the `WorkerClientRequestOpts`'s
      * `EventType` type argument
@@ -68,7 +68,7 @@ export interface WorkerClientRequestOpts<T, EventType extends number, ReturnType
      * @param additionalContext if the `beforeRequest` option is provided it is the returned result of that function
      * otherwise it will be undefined
      */
-    body?: (secretResult?: SecretResult<EventType>, additionalContext?: any) => EventType extends WorkerEvents.Callable ? WorkerCallableBody
+    body?: (secretResult: SecretResult<EventType> | null, additionalContext: any | null) => EventType extends WorkerEvents.Callable ? WorkerCallableBody
         : EventType extends WorkerEvents.Accessable ? WorkerAccessableBody
         : EventType extends WorkerEvents.Observable ? WorkerSubscribableBody : null;
     /**
@@ -78,7 +78,7 @@ export interface WorkerClientRequestOpts<T, EventType extends number, ReturnType
      * @param additionalContext if the `beforeRequest` option is provided it is the returned result of that function
      * otherwise it will be undefined
      */
-    resolve?: (response?: WorkerResponseEvent<any>, secretResult?: SecretResult<EventType>, additionalContext?: any) => any;
+    resolve?: (response: WorkerResponseEvent<any> | null, secretResult: SecretResult<EventType> | null, additionalContext: any | null) => any;
     /**
      * A placeholder to perform unique work in the more generic `WorkerClient.sendRequest()` method. This occurs immediately before the request is rejected due to an error
      * being caught
@@ -86,7 +86,7 @@ export interface WorkerClientRequestOpts<T, EventType extends number, ReturnType
      * @param secretResult the `SecretResult` that was returned when the client called upon the targeted worker property or method
      * @param additionalContext if the `beforeRequest` option is provided it is the returned result of that function
      */
-    beforeReject?: (response?: WorkerResponseEvent<any>, secretResult?: SecretResult<EventType>, additionalContext?: any) => void;
+    beforeReject?: (response: WorkerResponseEvent<any> | null, secretResult: SecretResult<EventType> | null, additionalContext: any | null) => void;
 }
 
 

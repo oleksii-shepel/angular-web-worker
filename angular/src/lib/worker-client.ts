@@ -105,7 +105,7 @@ export class WorkerClient<T> {
                     this.removeSubscription(key);
                 }
             }
-            this.workerRef.terminate();
+            this.workerRef?.terminate();
             this.secrets = [];
             this.observables = {};
             this.worker = null;
@@ -143,22 +143,23 @@ export class WorkerClient<T> {
         return this.sendRequest(WorkerEvents.Accessable, {
             workerProperty: property,
             additionalConditions: [{
-                if: (secret) => secret.body.get,
-                reject: (secret) => new Error(`WorkerClient: will not apply the get method to the "${secret.propertyName}" property because the get accessor has been explicity set to false`)
+                if: (secret) => !!secret?.body.get,
+                reject: (secret) => secret ? new Error(`WorkerClient: will not apply the get method to the "${secret.propertyName}" property because the get accessor has been explicity set to false`) : 
+                    new Error('WorkerClient: will not apply the get method to the property because the get accessor has not been explicity set to true'),
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the get method',
             body: () => { return { isGet: true }; },
             resolve: (resp) => {
-                const metaData = WorkerUtils.getAnnotation<AccessableMetaData[]>(this.definition.worker, WorkerAnnotations.Accessables).filter(x => x.name === resp.propertyName)[0];
-                if (metaData.shallowTransfer) {
-                    if (metaData.type) {
-                        if (metaData.type.prototype && resp.result) {
-                            resp.result.__proto__ = metaData.type.prototype;
-                        }
+                if (resp) {
+                    const metaDataArray = WorkerUtils.getAnnotation<AccessableMetaData[]>(this.definition.worker, WorkerAnnotations.Accessables);
+                    const metaData = metaDataArray && metaDataArray.filter(x => x.name === resp.propertyName)[0];
+                    if (metaData && metaData.shallowTransfer && metaData.type?.prototype && resp.result) {
+                        resp.result.__proto__ = metaData.type.prototype;
                     }
-
+                    return resp.result;
+                } else {
+                    return null;
                 }
-                return resp.result;
             }
         });
 
@@ -189,7 +190,7 @@ export class WorkerClient<T> {
         return this.castPromise<void>(this.sendRequest(WorkerEvents.Accessable, {
             workerProperty: property,
             additionalConditions: [{
-                if: (secret) => secret.body.set,
+                if: (secret) => !!secret?.body.set,
                 reject: (secret) => new Error(`WorkerClient: will not apply the set method to the "${secret.propertyName}" property because the set accessor has been explicity set to false`)
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the set method',
@@ -222,7 +223,8 @@ export class WorkerClient<T> {
             secretError: 'WorkerClient: only methods decorated with @Callable() can be used in the call method',
             body: (secret) => { return { arguments: secret.body.args }; },
             resolve: (resp) => {
-                const metaData = WorkerUtils.getAnnotation<CallableMetaData[]>(this.definition.worker, WorkerAnnotations.Callables, []).filter(x => x.name === resp.propertyName)[0];
+                const metaDataArray = WorkerUtils.getAnnotation<CallableMetaData[]>(this.definition.worker, WorkerAnnotations.Callables, []);
+                const metaData = metaDataArray && metaDataArray.filter(x => x.name === resp.propertyName)[0];
                 if (metaData.shallowTransfer) {
                     if (metaData.returnType === Promise) {
                         throw new Error('WorkerClient: shallowTransfer will not be true in the @Callable() decorator when the decorated method returns a promise');
@@ -357,11 +359,17 @@ export class WorkerClient<T> {
         type: EventType,
         opts: WorkerClientRequestOpts<T, EventType, ReturnType>
     ): ReturnType extends Promise<any> ? ReturnType : Promise<ReturnType> {
+        if (!this.worker) {
+            throw new Error('WorkerClient: worker is not defined');
+        }
+
         const promise = new Promise<void>((resolve, reject) => {
             if (this._isConnected || opts.isConnect) {
                 try {
                     const noProperty = opts.workerProperty === undefined;
-                    const secretResult = noProperty ? null : this.isSecret(typeof opts.workerProperty === 'string' ? this.worker[opts.workerProperty] : opts.workerProperty(this.worker), type);
+                    const propertyValue = typeof opts.workerProperty === 'string' ? (this.worker as any)[opts.workerProperty] :
+                                          typeof opts.workerProperty === 'function' ? opts.workerProperty(this.worker as any) : null;
+                    const secretResult = opts.workerProperty ? this.isSecret(propertyValue, type) : null;
                     if (secretResult || noProperty) {
                         // additional checks ---
                         if (opts.additionalConditions) {
@@ -381,7 +389,7 @@ export class WorkerClient<T> {
 
                         // response ----
                         const requestSecret = this.generateSecretKey();
-                        const repsonseSubscription = this.responseEvent.subscribe((resp) => {
+                        const repsonseSubscription = this.responseEvent?.subscribe((resp) => {
                             try {
                                 let isValidReponse = resp.type === type && resp.requestSecret === requestSecret;
                                 isValidReponse = noProperty ? isValidReponse : (isValidReponse && secretResult.propertyName === resp.propertyName);
@@ -396,7 +404,7 @@ export class WorkerClient<T> {
                                         } else {
                                             resolve();
                                         }
-                                        repsonseSubscription.unsubscribe();
+                                        repsonseSubscription?.unsubscribe();
 
                                     } else {
 
@@ -405,7 +413,7 @@ export class WorkerClient<T> {
                                         if (opts.beforeReject) {
                                             opts.beforeReject(resp, secretResult, additionalContext);
                                         }
-                                        repsonseSubscription.unsubscribe();
+                                        repsonseSubscription?.unsubscribe();
                                         reject(JSON.parse(resp.error));
                                     }
 
@@ -444,7 +452,7 @@ export class WorkerClient<T> {
         request: WorkerRequestEvent<EventType>
     ) {
         try {
-            this.workerRef.postMessage(request);
+            this.workerRef?.postMessage(request);
         } catch (e) {
             throw new Error('Unable to serialize the request from the client to the worker');
         }
@@ -500,7 +508,7 @@ export class WorkerClient<T> {
      */
     private findObservableKey(
         value: Subscription | Observable<any>
-    ): string {
+    ): string | null {
         for (const key in this.observables) {
             if (value instanceof Subscription) {
                 if (this.observables[key].subscription === value) {
@@ -523,9 +531,7 @@ export class WorkerClient<T> {
         subscriptionKey: string
     ) {
         if (this.observables[subscriptionKey]) {
-            if (this.observables[subscriptionKey].subscription) {
-                this.observables[subscriptionKey].subscription.unsubscribe();
-            }
+            this.observables[subscriptionKey].subscription?.unsubscribe();
         }
         delete this.observables[subscriptionKey];
     }
@@ -613,6 +619,10 @@ export class WorkerClient<T> {
         this.responseEvent = new Subject<WorkerResponseEvent<WorkerEvents.Callable>>();
         this.observables = {};
 
+        if (!this.workerRef) {
+            throw new Error('WorkerClient: the WorkerClient.connect() method must be called before a worker can be accessed');
+        }
+
         this.workerRef.onmessage = (ev: WorkerEvent<WorkerResponseEvent<any>>) => {
             switch (ev.data.type) {
                 case WorkerEvents.ObservableMessage:
@@ -631,7 +641,7 @@ export class WorkerClient<T> {
                     }
                     break;
                 default:
-                    this.responseEvent.next(ev.data);
+                    this.responseEvent?.next(ev.data);
             }
         };
 
