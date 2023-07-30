@@ -1,4 +1,4 @@
-import { dirname, join, normalize, strings } from '@angular-devkit/core';
+import { dirname, join, normalize, strings, virtualFs, workspaces } from '@angular-devkit/core';
 import * as jsoncparser from 'jsonc-parser';
 import {
   Rule, SchematicContext, SchematicsException, Tree,
@@ -6,7 +6,7 @@ import {
 } from '@angular-devkit/schematics';
 import { parseName } from '@schematics/angular/utility/parse-name';
 import { relativePathToWorkspaceRoot } from '@schematics/angular/utility/paths';
-import { buildDefaultPath, getWorkspace, updateWorkspace } from '@schematics/angular/utility/workspace';
+import { buildDefaultPath, getWorkspace } from '@schematics/angular/utility/workspace';
 import { BrowserBuilderOptions } from '@schematics/angular/utility/workspace-models';
 import { WebWorkerSchema } from './schema';
 
@@ -100,6 +100,35 @@ export default function (options: WebWorkerSchema): Rule {
       move(parsedPath.path),
     ]);
 
+    function createHost(tree) {
+        return {
+            async readFile(path) {
+                const data = tree.read(path);
+                if (!data) {
+                    throw new Error('File not found.');
+                }
+                return virtualFs.fileBufferToString(data);
+            },
+            async writeFile(path, data) {
+                return tree.overwrite(path, data);
+            },
+            async isDirectory(path) {
+                // approximate a directory check
+                return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
+            },
+            async isFile(path) {
+                return tree.exists(path);
+            },
+        };
+    }
+
+    function updateWorkspace(ws) {
+        return async (t: Tree) => {
+            const host = createHost(t);
+            await workspaces.writeWorkspace(ws, host);
+            return noop();
+        }
+    }
 
     return chain([
       needWebWorkerConfig ? addConfig(options, root) : noop(),
