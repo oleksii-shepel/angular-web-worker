@@ -10,7 +10,7 @@ export class ClientWebWorker<T> implements Worker {
     /**
      * Handles execution of code in a worker
      */
-    private controller: WorkerController<T>;
+    private controller: WorkerController<T> | null;
 
     /**
      * Interface for message bus provided into a `WorkerController` allowing the communication mechanism to be interchanged between in-app, and native worker
@@ -32,12 +32,18 @@ export class ClientWebWorker<T> implements Worker {
         };
         this.controller = new WorkerController(workerType, this.messageBus);
     }
-    onmessageerror: (this: Worker, ev: MessageEvent<any>) => any;
+
+    onmessageerror(ev: MessageEvent<any>) {
+    }
 
     /**
      * Returns instance of worker class
      */
     get workerInstance(): T {
+        if (!this.controller) {
+            throw new Error('WorkerController not initialized');
+        }
+
         return this.controller.workerInstance;
     }
 

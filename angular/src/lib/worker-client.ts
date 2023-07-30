@@ -39,7 +39,7 @@ export class WorkerClient<T> {
      * An event subject that is triggered each time a response is recieved from a `WorkerController`. This is subscribed to immediately before any request is made in the `sendRequest()` method.
      * This allows the `Worker.onmessage` listener to be mapped back to an async function call from where the request originated
      */
-    private responseEvent: Subject<WorkerResponseEvent<WorkerEvents.Callable | WorkerEvents.Accessable | WorkerEvents.Observable | WorkerEvents.ObservableMessage>>;
+    private responseEvent: Subject<WorkerResponseEvent<(WorkerEvents.Callable | WorkerEvents.Accessable | WorkerEvents.Observable | WorkerEvents.ObservableMessage) & any>>;
     /**
      * A dictionary of observable references that listen for events triggered by the worker after they have been subscribed or observed through the use of either the `subscribe()` or `observe` methods
      */

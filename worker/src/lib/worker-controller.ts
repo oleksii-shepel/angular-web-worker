@@ -364,11 +364,12 @@ export class WorkerController<T> {
                 requestSecret: response.requestSecret,
                 propertyName: response.propertyName,
                 result: {
-                    key: response.result?.key,
+                    key: response.result?.key ?? 'unknown',
                     type: WorkerObservableMessageTypes.Error,
                     error: JSON.parse(JSON.stringify(new Error('Unable to serialize subsribable response from worker to client'), this.replaceErrors))
                 },
             };
+
             this.messageBus.postMessage(errorResponse);
         }
     }

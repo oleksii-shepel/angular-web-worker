@@ -23,11 +23,11 @@ export interface WorkerClientObservableRef {
     /**
      * A subscription to the `WorkerClientObservableRef.subject` which is created and returned by the `WorkerClient.subscribe()` method.
      */
-    subscription: Subscription;
+    subscription: Subscription | null;
     /**
      *  An observable from the `WorkerClientObservableRef.subject` which is created and returned by the `WorkerClient.observe()` method.
      */
-    observable: Observable<any>;
+    observable: Observable<any> | null;
     /**
      * The name of the worker's RxJS subject property that the client is listening to
      */
