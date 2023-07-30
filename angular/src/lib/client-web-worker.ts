@@ -64,7 +64,7 @@ export class ClientWebWorker<T> implements Worker {
      * Unsubscribes from all subscriptions in the `WorkerController` and then destroys the controller
      */
     terminate() {
-        this.controller.removeAllSubscriptions();
+        this.controller?.removeAllSubscriptions();
         this.controller = null;
     }
 

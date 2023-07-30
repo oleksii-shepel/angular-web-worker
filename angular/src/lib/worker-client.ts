@@ -22,11 +22,11 @@ export class WorkerClient<T> {
     /**
      * Reference to the browser's worker class for posting messages and terminating the worker
      */
-    private workerRef: Worker | ClientWebWorker<T>;
+    private workerRef: Worker | ClientWebWorker<T> | null = null;
     /**
      * The client instance of the worker class
      */
-    private worker: T;
+    private worker: T | null = null;
     /**
      * A secret key that must be returned when decorated properties and/or methods are called from the client instance of the worker class
      */
@@ -34,20 +34,20 @@ export class WorkerClient<T> {
     /**
      * Array of secret keys containing the `workerSecret` and `WorkerRequestEvent.requestSecret`s ensuring that there are never two of the same keys at any point in time
      */
-    private secrets: string[];
+    private secrets: string[] = [];
     /**
      * An event subject that is triggered each time a response is recieved from a `WorkerController`. This is subscribed to immediately before any request is made in the `sendRequest()` method.
      * This allows the `Worker.onmessage` listener to be mapped back to an async function call from where the request originated
      */
-    private responseEvent: Subject<WorkerResponseEvent<(WorkerEvents.Callable | WorkerEvents.Accessable | WorkerEvents.Observable | WorkerEvents.ObservableMessage) & any>>;
+    private responseEvent: Subject<WorkerResponseEvent<(WorkerEvents.Callable | WorkerEvents.Accessable | WorkerEvents.Observable | WorkerEvents.ObservableMessage) & any>> | null = null;
     /**
      * A dictionary of observable references that listen for events triggered by the worker after they have been subscribed or observed through the use of either the `subscribe()` or `observe` methods
      */
-    private observables: WorkerClientObservablesDict;
+    private observables: WorkerClientObservablesDict = {};
     /**
      * Whether the worker is active after it is created with the `connect()` method and before it has been terminated by the `destroy()` method
      */
-    private _isConnected: boolean;
+    private _isConnected: boolean = false;
 
     /**
      * Creates a new `WorkerClient`
@@ -68,7 +68,8 @@ export class WorkerClient<T> {
         if (!this._isConnected) {
             this.secrets = [];
             this.workerSecret = this.generateSecretKey();
-            this.worker = WorkerUtils.getAnnotation<Function>(this.definition.worker, WorkerAnnotations.Factory)({
+            const workerFunction = WorkerUtils.getAnnotation<Function>(this.definition.worker, WorkerAnnotations.Factory);
+            this.worker = workerFunction && workerFunction({
                 isClient: true,
                 clientSecret: this.workerSecret
             });
@@ -89,6 +90,8 @@ export class WorkerClient<T> {
                 },
                 secretError: 'Could not initialise worker'
             }));
+        } else {
+            return Promise.resolve();
         }
     }
 
@@ -591,7 +594,7 @@ export class WorkerClient<T> {
     private isSecret<SecretType extends number>(
         secretResult: any,
         type: SecretType
-    ): SecretResult<SecretType> {
+    ): SecretResult<SecretType> | null {
         if (secretResult) {
             if (secretResult['clientSecret'] && secretResult['propertyName'] && secretResult['type']) {
                 if (secretResult['clientSecret'] === this.workerSecret && secretResult['type'] === type) {
