@@ -1,6 +1,8 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    //"strict": true,
+    "forceConsistentCasingInFileNames": true,
     "baseUrl": "./",
     "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
@@ -31,5 +33,10 @@
   },
   "exclude": [
     "node_modules", "dist"
-  ]
+  ],
+  "angularCompilerOptions": {
+    "enableIvy": true,
+    "compilationMode": "partial",
+    "strictTemplates": true
+  }
 }

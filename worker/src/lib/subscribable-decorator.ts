@@ -8,7 +8,7 @@ import 'reflect-metadata';
  * @Serialized When data is transferred through `Subject.next()`, functions will not be copied and circular referencing structures will cause errors
  */
 export function Subscribable() {
-    return function <T, Tkey extends keyof ObservablesOnly<T>>(target: T, propertyKey: Tkey) {
+    return function <T extends object, Tkey extends keyof ObservablesOnly<T>>(target: T, propertyKey: Tkey) {
         WorkerUtils.pushAnnotation(target.constructor, WorkerAnnotations.Observables, <SubscribableMetaData>{
             name: propertyKey,
             type: Reflect.getMetadata('design:type', target, <string>propertyKey)

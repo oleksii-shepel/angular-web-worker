@@ -39,45 +39,43 @@ export const WorkerFactoryFunctions: WorkerFactoryFunctionsDict = {
     },
 
     configureAccessables: (instance: any) => {
-        const accessables: AccessableMetaData[] = WorkerUtils.getAnnotation(instance.__proto__.constructor, WorkerAnnotations.Accessables, []);
+        const accessables = WorkerUtils.getAnnotation<AccessableMetaData[]>(instance.__proto__.constructor, WorkerAnnotations.Accessables, []);
 
         if (accessables) {
-            accessables.forEach((item) => {
+            accessables.forEach(function(item: any) {
                 let _val = instance[item.name];
-                const getter = function () {
-                    const config: WorkerConfig = this.__worker_config__;
-                    if (config) {
-                        if (config.isClient) {
-                            const secret: SecretResult<WorkerEvents.Accessable> = {
-                                clientSecret: config.clientSecret,
-                                type: WorkerEvents.Accessable,
-                                propertyName: item.name,
-                                body: {
-                                    get: item.get,
-                                    set: item.set
-                                }
-                            };
-                            return secret;
+                delete instance[item.name];
+
+                Object.defineProperty(instance, item.name, {
+                    get: function() {
+                        const config: WorkerConfig = instance.__worker_config__;
+                        if (config) {
+                            if (config.isClient && config.clientSecret) {
+                                const secret: SecretResult<WorkerEvents.Accessable> = {
+                                    clientSecret: config.clientSecret,
+                                    type: WorkerEvents.Accessable,
+                                    propertyName: item.name,
+                                    body: {
+                                        get: item.get,
+                                        set: item.set
+                                    }
+                                };
+                                return secret;
+                            } else {
+                                return _val;
+                            }
                         } else {
                             return _val;
                         }
-                    } else {
-                        return _val;
-                    }
-                };
+                    },
 
-                const setter = newVal => {
-                    _val = newVal;
-                };
+                    set: (newVal: any) => {
+                        _val = newVal;
+                    },
 
-                delete instance[item.name];
-                Object.defineProperty(instance, item.name, {
-                    get: getter,
-                    set: setter,
                     enumerable: true,
                     configurable: true
                 });
-
             });
         }
 
@@ -88,36 +86,34 @@ export const WorkerFactoryFunctions: WorkerFactoryFunctionsDict = {
         const observables = WorkerUtils.getAnnotation<SubscribableMetaData[]>(instance.__proto__.constructor, WorkerAnnotations.Observables, []);
 
         if (observables) {
-            observables.forEach((item) => {
+            observables.forEach(function(item: any) {
                 let _val = instance[item.name];
+                delete instance[item.name];
 
-                const getter = function () {
-                    const config: WorkerConfig = this.__worker_config__;
-                    if (config) {
-                        if (config.isClient) {
-                            const secret: SecretResult<WorkerEvents.Observable> = {
-                                clientSecret: config.clientSecret,
-                                type: WorkerEvents.Observable,
-                                propertyName: item.name,
-                                body: null
-                            };
-                            return secret;
+                Object.defineProperty(instance, item.name, {
+                    get: function() {
+                        const config: WorkerConfig = instance.__worker_config__;
+                        if (config) {
+                            if (config.isClient && config.clientSecret) {
+                                const secret: SecretResult<WorkerEvents.Observable> = {
+                                    clientSecret: config.clientSecret,
+                                    type: WorkerEvents.Observable,
+                                    propertyName: item.name,
+                                    body: null
+                                };
+                                return secret;
+                            } else {
+                                return _val;
+                            }
                         } else {
                             return _val;
                         }
-                    } else {
-                        return _val;
-                    }
-                };
+                    },
 
-                const setter = newVal => {
-                    _val = newVal;
-                };
+                    set: (newVal: any) => {
+                        _val = newVal;
+                    },
 
-                delete instance[item.name];
-                Object.defineProperty(instance, item.name, {
-                    get: getter,
-                    set: setter,
                     enumerable: true,
                     configurable: true
                 });

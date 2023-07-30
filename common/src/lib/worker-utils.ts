@@ -51,7 +51,7 @@ export class WorkerUtils {
      * @param propertyKey name of the annotated array
      * @param ifUndefined the returned value if the annotated property does not exist
      */
-    static getAnnotation<T>(cls: any, propertyKey: string, ifUndefined = null): T {
+    static getAnnotation<T>(cls: any, propertyKey: string, ifUndefined: T | null = null): T | null {
         if (cls.hasOwnProperty(WorkerAnnotations.Annotation)) {
             return cls[WorkerAnnotations.Annotation][propertyKey];
         } else {

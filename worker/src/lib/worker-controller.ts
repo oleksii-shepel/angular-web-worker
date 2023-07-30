@@ -26,13 +26,10 @@ export class WorkerController<T> {
      * @param onMessageFn the worker onmessage event function passed into constructor allowing this to be mocked when running within the app (not the worker script)
      */
     constructor(private workerClass: WebWorkerType<any>, private messageBus: WorkerMessageBus) {
-        try {
-            this.worker = WorkerUtils.getAnnotation<Function>(workerClass, WorkerAnnotations.Factory)({
-                isClient: false
-            });
-            this.subscriptions = {};
-            this.registerEvents();
-        } catch (e) { }
+        const workerFunction = WorkerUtils.getAnnotation<Function>(workerClass, WorkerAnnotations.Factory);
+        this.worker = workerFunction && workerFunction({ isClient: false });
+        this.subscriptions = {};
+        this.registerEvents();
     }
 
     /**

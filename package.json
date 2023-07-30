@@ -5,7 +5,7 @@
   "main": "y",
   "scripts": {
     "test": "karma start karma.conf.js",
-    "build:pkg": "ng-packagr -p ng-package.json",
+    "build:pkg": "ng-packagr -p ng-package.json -c tsconfig.json",
     "build:schematics": "npm run remove:schematics && tsc -p ./schematics/tsconfig.schematics.json && npm run move:schematics",
     "move:schematics": "copyfiles -f  ./schematics/package.json ./dist/schematics && copyfiles -f  ./schematics/collection.json ./dist/schematics && copyfiles -u 3 ./schematics/src/files/**/*.* ./dist/schematics/src/files/ && copyfiles -f ./schematics/src/schema.json ./dist/schematics/src ",
     "remove:schematics": "rimraf ./dist/schematics",
