@@ -155,6 +155,10 @@ export class WorkerController<T> {
     async handleCallable(request: WorkerRequestEvent<WorkerEvents.Callable>) {
         let response: WorkerResponseEvent<any>;
         try {
+            if (!request.body) {
+                throw new Error('Request body is null');
+            }
+
             request.body.arguments = this.applyShallowTransferToCallableArgs(request, request.body.arguments);
             const result = await this.worker[request.propertyName](...request.body.arguments);
 
@@ -201,6 +205,9 @@ export class WorkerController<T> {
     handleAccessable(request: WorkerRequestEvent<WorkerEvents.Accessable>) {
         let response: WorkerResponseEvent<any>;
         try {
+            if (!request.body) {
+                throw new Error('Request body is null');
+            }
             const metaDataArray = WorkerUtils.getAnnotation<AccessableMetaData[]>(this.workerClass, 'accessables', []);
             const metaData = metaDataArray && metaDataArray.filter(x => x.name === request.propertyName)[0];
             if (request.body.isGet) {
@@ -228,6 +235,10 @@ export class WorkerController<T> {
      */
     handleSubscription(request: WorkerRequestEvent<WorkerEvents.Observable>) {
         let response: WorkerResponseEvent<WorkerEvents.Observable>;
+
+        if (!request.body) {
+            throw new Error('Request body is null');
+        }
 
         if (!request.body.isUnsubscribe) {
             try {
@@ -257,6 +268,10 @@ export class WorkerController<T> {
      */
     createSubscription(request: WorkerRequestEvent<WorkerEvents.Observable>): void {
 
+        if (!request.body) {
+            throw new Error('Request body is null');
+        }
+
         this.removeSubscription(request.body.subscriptionKey);
 
         this.subscriptions[request.body.subscriptionKey] = (<Subject<any>>this.worker[request.propertyName]).subscribe(
@@ -267,7 +282,7 @@ export class WorkerController<T> {
                     isError: false,
                     requestSecret: null,
                     result: {
-                        key: request.body.subscriptionKey,
+                        key: request.body?.subscriptionKey ?? 'undefined',
                         type: WorkerObservableMessageTypes.Next,
                         value: val
                     }
@@ -280,7 +295,7 @@ export class WorkerController<T> {
                     isError: true,
                     requestSecret: null,
                     result: {
-                        key: request.body.subscriptionKey,
+                        key: request.body?.subscriptionKey ?? 'undefined',
                         type: WorkerObservableMessageTypes.Error,
                         error: JSON.parse(JSON.stringify(err, this.replaceErrors))
                     }
@@ -293,7 +308,7 @@ export class WorkerController<T> {
                     isError: false,
                     requestSecret: null,
                     result: {
-                        key: request.body.subscriptionKey,
+                        key: request.body?.subscriptionKey ?? 'undefined',
                         type: WorkerObservableMessageTypes.Complete,
                     }
                 };

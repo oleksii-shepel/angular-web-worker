@@ -58,8 +58,8 @@ export interface WorkerRequestEvent<EventType> {
      * Detail of the request that is specific to the request type. The structure is conditional on the request's generic `EventType`
      * type argument as well as the request's `type` property
      */
-    body: EventType extends WorkerEvents.Callable ? WorkerCallableBody : EventType extends WorkerEvents.Accessable ? WorkerAccessableBody
-    : EventType extends WorkerEvents.Observable ? WorkerSubscribableBody : null;
+    body: (EventType extends WorkerEvents.Callable ? WorkerCallableBody : EventType extends WorkerEvents.Accessable ? WorkerAccessableBody
+    : EventType extends WorkerEvents.Observable ? WorkerSubscribableBody : never) | null;
 }
 
 /**
@@ -200,7 +200,7 @@ export interface SecretResult<SecretType> {
      * Detail of the secret that is specific to the secret type. The structure is conditional on the secrets generic `SecretType` type argument as well as the secret's `type` property
      * @see WorkerEvents
      */
-    body: SecretType extends WorkerEvents.Callable ? SecretCallableBody : SecretType extends WorkerEvents.Accessable ? SecretAccessableBody : null;
+    body: (SecretType extends WorkerEvents.Callable ? SecretCallableBody : SecretType extends WorkerEvents.Accessable ? SecretAccessableBody : never) | null;
 }
 
 /**

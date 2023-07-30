@@ -62,7 +62,7 @@ export interface WorkerDefinition {
      * @example
      * () => new Worker('./app.worker.ts', {type: 'module'})
      */
-    initFn: () => Worker;
+    initFn: () => Worker | null;
 }
 
 

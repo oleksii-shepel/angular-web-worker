@@ -143,8 +143,8 @@ export class WorkerClient<T> {
         return this.sendRequest(WorkerEvents.Accessable, {
             workerProperty: property,
             additionalConditions: [{
-                if: (secret) => !!secret?.body.get,
-                reject: (secret) => secret ? new Error(`WorkerClient: will not apply the get method to the "${secret.propertyName}" property because the get accessor has been explicity set to false`) : 
+                if: (secret) => !!secret?.body?.get,
+                reject: (secret) => secret ? new Error(`WorkerClient: will not apply the get method to the "${secret.propertyName}" property because the get accessor has been explicity set to false`) :
                     new Error('WorkerClient: will not apply the get method to the property because the get accessor has not been explicity set to true'),
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the get method',
@@ -190,8 +190,9 @@ export class WorkerClient<T> {
         return this.castPromise<void>(this.sendRequest(WorkerEvents.Accessable, {
             workerProperty: property,
             additionalConditions: [{
-                if: (secret) => !!secret?.body.set,
-                reject: (secret) => new Error(`WorkerClient: will not apply the set method to the "${secret.propertyName}" property because the set accessor has been explicity set to false`)
+                if: (secret) => !!secret?.body?.set,
+                reject: (secret) => secret ? new Error(`WorkerClient: will not apply the set method to the "${secret.propertyName}" property because the set accessor has been explicity set to false`) :
+                new Error(`WorkerClient: will not apply the set method to the property because the set accessor has been explicity set to false`)
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the set method',
             body: () => { return { isGet: false, value: value }; }
@@ -221,19 +222,23 @@ export class WorkerClient<T> {
         return this.sendRequest(WorkerEvents.Callable, {
             workerProperty: callFn,
             secretError: 'WorkerClient: only methods decorated with @Callable() can be used in the call method',
-            body: (secret) => { return { arguments: secret.body.args }; },
+            body: (secret) => { return { arguments: secret?.body?.args ?? [] }; },
             resolve: (resp) => {
-                const metaDataArray = WorkerUtils.getAnnotation<CallableMetaData[]>(this.definition.worker, WorkerAnnotations.Callables, []);
-                const metaData = metaDataArray && metaDataArray.filter(x => x.name === resp.propertyName)[0];
-                if (metaData.shallowTransfer) {
-                    if (metaData.returnType === Promise) {
-                        throw new Error('WorkerClient: shallowTransfer will not be true in the @Callable() decorator when the decorated method returns a promise');
+                if(resp) {
+                    const metaDataArray = WorkerUtils.getAnnotation<CallableMetaData[]>(this.definition.worker, WorkerAnnotations.Callables, []);
+                    const metaData = metaDataArray && metaDataArray.filter(x => x.name === resp.propertyName)[0];
+                    if (metaData && metaData.shallowTransfer) {
+                        if (metaData.returnType === Promise) {
+                            throw new Error('WorkerClient: shallowTransfer will not be true in the @Callable() decorator when the decorated method returns a promise');
+                        }
+                        if (metaData.returnType && resp.result) {
+                            resp.result.__proto__ = metaData.returnType.prototype;
+                        }
                     }
-                    if (metaData.returnType && resp.result) {
-                        resp.result.__proto__ = metaData.returnType.prototype;
-                    }
+                    return resp.result;
+                } else {
+                    return null;
                 }
-                return resp.result;
             }
         });
 
@@ -278,7 +283,7 @@ export class WorkerClient<T> {
         return this.castPromise<Subscription>(this.sendRequest(WorkerEvents.Observable, {
             workerProperty: observable,
             secretError: 'WorkerClient: only methods decorated with @Callable() can be used in the call method',
-            beforeRequest: (secret) => this.createSubscription(secret.propertyName, next, error, complete),
+            beforeRequest: (secret) => secret && this.createSubscription(secret.propertyName, next, error, complete),
             body: (secret, key) => { return { isUnsubscribe: false, subscriptionKey: key }; },
             resolve: (resp, secret, key) => this.observables[key].subscription,
             beforeReject: (resp, secret, key) => this.removeSubscription(key)
@@ -319,7 +324,7 @@ export class WorkerClient<T> {
         return this.castPromise<Observable<ObservableType>>(this.sendRequest(WorkerEvents.Observable, {
             workerProperty: observable,
             secretError: 'WorkerClient: only methods decorated with @Callable() can be used in the call method',
-            beforeRequest: (secret) => this.createObservable(secret.propertyName),
+            beforeRequest: (secret) => secret && this.createObservable(secret.propertyName),
             body: (secret, key) => { return { isUnsubscribe: false, subscriptionKey: key }; },
             resolve: (resp, secret, key) => this.observables[key].observable,
             beforeReject: (resp, secret, key) => this.removeSubscription(key)
@@ -392,7 +397,7 @@ export class WorkerClient<T> {
                         const repsonseSubscription = this.responseEvent?.subscribe((resp) => {
                             try {
                                 let isValidReponse = resp.type === type && resp.requestSecret === requestSecret;
-                                isValidReponse = noProperty ? isValidReponse : (isValidReponse && secretResult.propertyName === resp.propertyName);
+                                isValidReponse = noProperty ? isValidReponse : (isValidReponse && secretResult?.propertyName === resp.propertyName);
 
                                 if (isValidReponse) {
                                     if (!resp.isError) {
@@ -426,7 +431,7 @@ export class WorkerClient<T> {
                         // send request -----
                         const req: WorkerRequestEvent<EventType> = {
                             requestSecret: requestSecret,
-                            propertyName: noProperty ? null : secretResult.propertyName,
+                            propertyName: secretResult?.propertyName ?? 'unknown',
                             type: type,
                             body: opts.body ? opts.body(secretResult, additionalContext) : null
                         };

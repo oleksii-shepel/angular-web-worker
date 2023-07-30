@@ -68,9 +68,9 @@ export interface WorkerClientRequestOpts<T, EventType extends number, ReturnType
      * @param additionalContext if the `beforeRequest` option is provided it is the returned result of that function
      * otherwise it will be undefined
      */
-    body?: (secretResult: SecretResult<EventType> | null, additionalContext: any | null) => EventType extends WorkerEvents.Callable ? WorkerCallableBody
+    body?: (secretResult: SecretResult<EventType> | null, additionalContext: any | null) => (EventType extends WorkerEvents.Callable ? WorkerCallableBody
         : EventType extends WorkerEvents.Accessable ? WorkerAccessableBody
-        : EventType extends WorkerEvents.Observable ? WorkerSubscribableBody : null;
+        : EventType extends WorkerEvents.Observable ? WorkerSubscribableBody : never) | null;
     /**
      * Function that returns the value that is resolved by the `WorkerClient.sendRequest()` method. Only occurs if a successful request has been made to, and a response has been recieved from the worker
      * @param response the `WorkerResponseEvent` that was returned by the worker
