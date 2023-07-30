@@ -107,10 +107,10 @@ export class WorkerController<T> {
      */
     private replaceErrors(key: string, value: any) {
         if (value instanceof Error) {
-            const error = {};
+            const error: any = {};
             // tslint:disable-next-line: no-shadowed-variable
             Object.getOwnPropertyNames(value).forEach(function (key) {
-                error[key] = value[key];
+                error[key] = (value as any)[key];
             });
             return error;
         }
@@ -161,10 +161,9 @@ export class WorkerController<T> {
             response = this.response(WorkerEvents.Callable, request, result);
         } catch (e) {
             response = this.error(WorkerEvents.Callable, request, e);
-        } finally {
-            this.postMessage(response);
         }
 
+        this.postMessage(response);
     }
 
     /**
@@ -202,12 +201,13 @@ export class WorkerController<T> {
     handleAccessable(request: WorkerRequestEvent<WorkerEvents.Accessable>) {
         let response: WorkerResponseEvent<any>;
         try {
-            const metaData = WorkerUtils.getAnnotation<AccessableMetaData[]>(this.workerClass, 'accessables', []).filter(x => x.name === request.propertyName)[0];
+            const metaDataArray = WorkerUtils.getAnnotation<AccessableMetaData[]>(this.workerClass, 'accessables', []);
+            const metaData = metaDataArray && metaDataArray.filter(x => x.name === request.propertyName)[0];
             if (request.body.isGet) {
                 response = this.response(WorkerEvents.Accessable, request, this.worker[request.propertyName]);
             } else {
                 this.worker[request.propertyName] = request.body.value;
-                if (metaData.shallowTransfer) {
+                if (metaData && metaData.shallowTransfer) {
                     if (metaData.type && this.worker[request.propertyName]) {
                         this.worker[request.propertyName].__proto__ = metaData.type.prototype;
                     }
@@ -216,9 +216,9 @@ export class WorkerController<T> {
             }
         } catch (e) {
             response = this.error(WorkerEvents.Accessable, request, e);
-        } finally {
-            this.postMessage(response);
         }
+
+        this.postMessage(response);
     }
 
     /**
@@ -236,18 +236,17 @@ export class WorkerController<T> {
             } catch (e) {
                 this.removeSubscription(request.body.subscriptionKey);
                 response = this.error(WorkerEvents.Observable, request, e);
-            } finally {
-                this.postMessage(response);
             }
+
+            this.postMessage(response);
         } else {
             try {
                 this.removeSubscription(request.body.subscriptionKey);
                 response = this.response(WorkerEvents.Observable, request, null);
             } catch (e) {
                 response = this.error(WorkerEvents.Observable, request, e);
-            } finally {
-                this.postMessage(response);
             }
+            this.postMessage(response);
         }
     }
 
@@ -365,7 +364,7 @@ export class WorkerController<T> {
                 requestSecret: response.requestSecret,
                 propertyName: response.propertyName,
                 result: {
-                    key: response.result.key,
+                    key: response.result?.key,
                     type: WorkerObservableMessageTypes.Error,
                     error: JSON.parse(JSON.stringify(new Error('Unable to serialize subsribable response from worker to client'), this.replaceErrors))
                 },

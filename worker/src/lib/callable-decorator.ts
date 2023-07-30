@@ -36,7 +36,7 @@ export function Callable(options?: CallableOpts) {
 
         const originalMethod = descriptor.value;
         descriptor.value = function () {
-            const context = this;
+            const context: any = this;
             const args = Array.prototype.slice.call(arguments);
             const config: WorkerConfig = context.__worker_config__;
             if (config) {
