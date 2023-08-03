@@ -36,4 +36,5 @@ export class MultiplierWorker implements OnWorkerInit {
       return this.multipliers.reduce((acc, cur) => acc * cur, 1);
     }
 }
+
 bootstrapWorker(MultiplierWorker);
