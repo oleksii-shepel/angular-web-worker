@@ -24,9 +24,14 @@
       "dom"
     ],
     "paths": {
-      "web-worker": [
+      "angular-web-worker": [
+        "projects/web-worker/",
         "dist/web-worker"
-      ]
+      ],
+      "angular-web-worker/*": [
+        "projects/web-worker/*",
+        "dist/web-worker/*"
+      ],
     }
   },
   "angularCompilerOptions": {
