@@ -7,8 +7,8 @@
     "test": "karma start karma.conf.js",
     "build:pkg": "ng-packagr -p ng-package.json -c tsconfig.json",
     "build:schematics": "npm run remove:schematics && tsc -p ./schematics/tsconfig.schematics.json && npm run move:schematics",
-    "move:schematics": "copyfiles -f  ./schematics/package.json ./dist/schematics && copyfiles -f  ./schematics/collection.json ./dist/schematics && copyfiles -u 3 ./schematics/src/files/**/*.* ./dist/schematics/src/files/ && copyfiles -f ./schematics/src/schema.json ./dist/schematics/src ",
-    "remove:schematics": "rimraf ./dist/schematics",
+    "move:schematics": "copyfiles -f  ./schematics/package.json ../../dist/web-worker/schematics && copyfiles -f  ./schematics/collection.json ../../dist/web-worker/schematics && copyfiles -u 3 ./schematics/src/files/**/*.* ../../dist/web-worker/schematics/src/files/ && copyfiles -f ./schematics/src/schema.json ../../dist/web-worker/schematics/src ",
+    "remove:schematics": "rimraf ../../dist/web-worker/schematics",
     "build": "npm run build:pkg && npm run build:schematics"
   },
   "schematics": "./schematics/collection.json",

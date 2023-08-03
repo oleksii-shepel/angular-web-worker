@@ -100,29 +100,29 @@ export default function (options: WebWorkerSchema): Rule {
       move(parsedPath.path),
     ]);
 
-    function createHost(tree) {
+    function createHost(tree: Tree) {
         return {
-            async readFile(path) {
+            async readFile(path: string) {
                 const data = tree.read(path);
                 if (!data) {
                     throw new Error('File not found.');
                 }
                 return virtualFs.fileBufferToString(data);
             },
-            async writeFile(path, data) {
+            async writeFile(path: string, data: any) {
                 return tree.overwrite(path, data);
             },
-            async isDirectory(path) {
+            async isDirectory(path: string) {
                 // approximate a directory check
                 return !tree.exists(path) && tree.getDir(path).subfiles.length > 0;
             },
-            async isFile(path) {
+            async isFile(path: string) {
                 return tree.exists(path);
             },
         };
     }
 
-    function updateWorkspace(ws) {
+    function updateWorkspace(ws: any) {
         return async (t: Tree) => {
             const host = createHost(t);
             await workspaces.writeWorkspace(ws, host);
