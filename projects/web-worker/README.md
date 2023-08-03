@@ -51,7 +51,7 @@ import { AppWorker } from './app.worker';
     ...,
     // the path in the init function must given as a string (not a variable) and the type must be 'module'
     WorkerModule.forWorkers([
-       {worker: AppWorker, initFn: () => new Worker('./app.worker.ts', {type: 'module'})},
+       {worker: AppWorker, initFn: () => new Worker(new URL('./app.worker', import.meta.url), {type: 'module'})},
     ]),
     ...
   ],

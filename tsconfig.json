@@ -26,19 +26,19 @@
     "paths": {
       "angular-web-worker": [
         "projects/web-worker/worker/src/public-api.ts",
-        "dist/web-worker/public-api.d.ts"
+        "dist/web-worker"
       ],
       "angular-web-worker/common": [
         "projects/web-worker/common/src/public-api.ts",
-        "dist/web-worker/common/public-api.d.ts"
+        "dist/web-worker/common"
       ],
       "angular-web-worker/angular": [
         "projects/web-worker/angular/src/public-api.ts",
-        "dist/web-worker/angular/public-api.d.ts"
+        "dist/web-worker/angular"
       ],
       "angular-web-worker/testing": [
         "projects/web-worker/testing/src/public-api.ts",
-        "dist/web-worker/testing/public-api.d.ts"
+        "dist/web-worker/testing"
       ]
     }
   },

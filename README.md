@@ -1,5 +1,3 @@
-This is not workable version of angular-web-worker library. It is in development phase.
-
 # AngularWebWorker
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.0.
