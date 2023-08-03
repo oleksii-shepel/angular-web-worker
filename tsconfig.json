@@ -1,42 +1,38 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
     "baseUrl": "./",
-    "downlevelIteration": true,
     "outDir": "./dist/out-tsc",
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
     "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
+    "moduleResolution": "node",
     "importHelpers": true,
-    "target": "es2015",
-    "typeRoots": [
-      "node_modules/@types"
+    "target": "ES2022",
+    "module": "ES2022",
+    "useDefineForClassFields": false,
+    "lib": [
+      "ES2022",
+      "dom"
     ],
     "paths": {
-      "angular-web-worker": [
-        "./worker/src/public-api.ts"
-      ],
-      "angular-web-worker/angular": [
-        "./angular/src/public-api.ts"
-      ],
-      "angular-web-worker/common": [
-        "./common/src/public-api.ts"
-      ],
-      "angular-web-worker/*": [
-        "./dist/*"
+      "web-worker": [
+        "dist/web-worker"
       ]
     }
   },
-  "exclude": [
-    "node_modules", "dist"
-  ],
   "angularCompilerOptions": {
-    "enableIvy": true,
-    "compilationMode": "partial",
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
     "strictTemplates": true
   }
 }

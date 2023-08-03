@@ -144,7 +144,7 @@ export class WorkerClient<T> {
             workerProperty: property,
             additionalConditions: [{
                 if: (secret) => !!secret?.body?.get,
-                reject: (secret) => new Error(`WorkerClient: will not apply the get method to the "${secret?.propertyName ?? 'undefined'}" property because the get accessor has been explicity set to false`);
+                reject: (secret) => new Error(`WorkerClient: will not apply the get method to the "${secret?.propertyName ?? 'undefined'}" property because the get accessor has been explicity set to false`),
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the get method',
             body: () => { return { isGet: true }; },
@@ -190,7 +190,7 @@ export class WorkerClient<T> {
             workerProperty: property,
             additionalConditions: [{
                 if: (secret) => !!secret?.body?.set,
-                reject: (secret) => new Error(`WorkerClient: will not apply the set method to the "${secret?.propertyName ?? 'undefined'}" property because the set accessor has been explicity set to false`);
+                reject: (secret) => new Error(`WorkerClient: will not apply the set method to the "${secret?.propertyName ?? 'undefined'}" property because the set accessor has been explicity set to false`),
             }],
             secretError: 'WorkerClient: only properties decorated with @Accessable() can be used in the set method',
             body: () => { return { isGet: false, value: value }; }

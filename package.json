@@ -1,76 +1,39 @@
 {
   "name": "angular-web-worker",
-  "version": "1.0.3",
-  "description": "Library to assist with web worker communication in Angular apps",
-  "main": "y",
+  "version": "0.0.0",
   "scripts": {
-    "test": "karma start karma.conf.js",
-    "build:pkg": "ng-packagr -p ng-package.json -c tsconfig.json",
-    "build:schematics": "npm run remove:schematics && tsc -p ./schematics/tsconfig.schematics.json && npm run move:schematics",
-    "move:schematics": "copyfiles -f  ./schematics/package.json ./dist/schematics && copyfiles -f  ./schematics/collection.json ./dist/schematics && copyfiles -u 3 ./schematics/src/files/**/*.* ./dist/schematics/src/files/ && copyfiles -f ./schematics/src/schema.json ./dist/schematics/src ",
-    "remove:schematics": "rimraf ./dist/schematics",
-    "build": "npm run build:pkg && npm run build:schematics"
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
   },
-  "schematics": "./schematics/collection.json",
-  "author": {
-    "name": "Gavin Leo-Smith",
-    "email": "gavin@gleo-smith.co.za"
-  },
-  "license": "MIT",
-  "keywords": [
-    "angular",
-    "webworker",
-    "web worker",
-    "typescript"
-  ],
-  "bugs": {
-    "url": "https://github.com/gleosmith/angular-web-worker/issues"
-  },
-  "homepage": "https://github.com/gleosmith/angular-web-worker#readme",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gleosmith/angular-web-worker.git"
-  },
-  "peerDependencies": {
-    "@angular/core": "^16.0.0",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
-  },
-  "devDependencies": {
-    "@angular-devkit/core": "^16.0.0",
-    "@angular-devkit/schematics": "^16.0.0",
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^16.0.0",
     "@angular/common": "^16.0.0",
     "@angular/compiler": "^16.0.0",
-    "@angular/compiler-cli": "^16.0.0",
     "@angular/core": "^16.0.0",
+    "@angular/forms": "^16.0.0",
     "@angular/platform-browser": "^16.0.0",
     "@angular/platform-browser-dynamic": "^16.0.0",
-    "@schematics/angular": "^16.0.0",
-    "@types/jasmine": "^4.3.5",
-    "@types/node": "^16.0.0",
-    "copyfiles": "^2.4.1",
-    "core-js": "^3.32.0",
-    "jasmine-core": "^5.1.0",
-    "jasmine-spec-reporter": "^7.0.0",
-    "jsonc-parser": "^3.2.0",
-    "karma": "^6.4.2",
-    "karma-chrome-launcher": "^3.2.0",
-    "karma-cli": "^2.0.0",
-    "karma-coverage-istanbul-reporter": "^3.0.3",
-    "karma-jasmine": "^4.0.1",
-    "karma-jasmine-html-reporter": "^1.7.0",
-    "karma-sourcemap-loader": "^0.3.7",
-    "karma-typescript": "^5.0.0",
-    "karma-webpack": "^5.0.0",
+    "@angular/router": "^16.0.0",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.13.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^16.0.6",
+    "@angular/cli": "~16.0.0",
+    "@angular/compiler-cli": "^16.0.0",
+    "@types/jasmine": "~4.3.0",
+    "jasmine-core": "~4.6.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
     "ng-packagr": "^16.0.0",
-    "rimraf": "^2.6.3",
-    "ts-loader": "^9.4.4",
-    "ts-node": "~10.9.1",
-    "tsconfig-paths-webpack-plugin": "^3.2.0",
-    "tslint": "^5.11.0",
-    "tslib": "^2.6.1",
-    "typescript": "^4.9.5",
-    "webpack": "^5.0.0",
-    "zone.js": "^0.13.1"
+    "typescript": "~5.0.2"
   }
 }
