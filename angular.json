@@ -65,7 +65,8 @@
             "styles": [
               "projects/app/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "projects/app/tsconfig.worker.json"
           },
           "configurations": {
             "production": {
@@ -128,7 +129,8 @@
             "styles": [
               "projects/app/src/styles.scss"
             ],
-            "scripts": []
+            "scripts": [],
+            "webWorkerTsConfig": "projects/app/tsconfig.worker.json"
           }
         }
       }

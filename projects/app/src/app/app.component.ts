@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
-import { MultiplierWorker } from './multiplier.worker';
-import { WorkerClient, WorkerManager } from 'angular-web-worker/angular';
+
 
 @Component({
   selector: 'app-root',
@@ -10,21 +9,21 @@ import { WorkerClient, WorkerManager } from 'angular-web-worker/angular';
 export class AppComponent {
   title = 'app';
 
-  private client!: WorkerClient<MultiplierWorker>;
+  constructor() { }
 
-  constructor(private workerManager: WorkerManager) { }
-
-  async ngOnInit() {
-    if (this.workerManager.isBrowserCompatible) {
-      this.client = this.workerManager.createClient(MultiplierWorker);
+  ngOnInit() {
+    if (typeof Worker !== 'undefined') {
+      // Create a new
+      const worker = new Worker('../../multiplier.worker', { type: 'module' });
+      worker.onmessage = ({ data }) => {
+         console.log(`page got message: ${data}`);
+      };
+      worker.postMessage('hello');
     } else {
-      // if code won't block UI else implement other fallback behaviour
-      this.client = this.workerManager.createClient(MultiplierWorker, true);
-    }
 
-    await this.createWorker();
-    let result = await this.client.call(w => w.multiply(2000, 2000));
-    console.log(result);
+        // Web Workers are not supported in this environment.
+        // You should add a fallback so that your program still executes correctly.
+    }
   }
 
   async createWorker() {
