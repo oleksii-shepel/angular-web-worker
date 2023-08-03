@@ -1,0 +1,13 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "strict": false,
+        "outDir": "test/out-tsc",
+        "module": "commonjs",
+        "types": [
+            "jasmine",
+            "node"
+        ],
+    },
+
+}
