@@ -22,7 +22,7 @@ export class WorkerTestingManager extends WorkerManager {
         }
     }
 
-    createClient<T>(workerType: WebWorkerType<T>, runInApp: boolean = false): WorkerClient<T> {
+    createClient<T>(workerType: WebWorkerType<T>, runInApp = false): WorkerClient<T> {
         const definition = this.workers.filter(p => p === workerType)[0];
         if (definition) {
             return new WorkerTestingClient<T>({ worker: workerType, initFn: () => null });

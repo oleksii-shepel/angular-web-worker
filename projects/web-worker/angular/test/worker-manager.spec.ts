@@ -3,12 +3,12 @@ import { AngularWebWorker } from './../../worker/src/public-api';
 
 @AngularWebWorker()
 class TestClass {
-    name: string = 'random';
+    name = 'random';
 }
 
 @AngularWebWorker()
 class TestClass2 {
-    name: string = 'random22';
+    name = 'random22';
 }
 
 describe('WorkerManager: [angular-web-worker/angular]', () => {

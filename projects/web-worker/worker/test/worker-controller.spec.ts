@@ -22,7 +22,7 @@ class TestUser {
 class TestClass implements OnWorkerInit {
 
     @Accessable() setTestProp: number;
-    @Accessable() getTestProp: string = 'testvalue';
+    @Accessable() getTestProp = 'testvalue';
     @Accessable({ shallowTransfer: true }) transferableTestProp: TestUser;
     @Subscribable() subscriptionTest: Subject<any> = new Subject<string>();
     @Subscribable() undefinedSubscriptionTest: Subject<any>;

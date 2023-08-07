@@ -35,6 +35,9 @@ export class AppComponent {
     let result = await this.client.call(m => m.multiplyNumbers());
     console.log(result);
 
+    result = await this.client2.call(d => d.divide(11,2));
+    console.log("divider: ",result);
+
     await this.client.set(w => w.multipliers, [1, 2, 3]);
     result = await this.client.call(m => m.multiplyNumbers());
     console.log(result);
@@ -50,7 +53,7 @@ export class AppComponent {
     );
 
     result = await this.client2.call(d => d.divide(10,2));
-    console.log(result);
+    console.log("divider: ",result);
   }
 
   async createWorker() {

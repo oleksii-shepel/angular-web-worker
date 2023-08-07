@@ -75,7 +75,7 @@ export class WorkerManager {
      *
      * }
      */
-    createClient<T>(workerType: WebWorkerType<T>, runInApp: boolean = false): WorkerClient<T> {
+    createClient<T>(workerType: WebWorkerType<T>, runInApp = false): WorkerClient<T> {
         const definition = this.workerDefinitions.filter(p => p.worker === workerType)[0];
         if (definition) {
             return new WorkerClient<T>(definition, runInApp);

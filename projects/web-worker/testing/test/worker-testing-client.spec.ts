@@ -3,7 +3,7 @@ import { WorkerTestingClient, createTestClient } from 'testing/src/public-api';
 
 @AngularWebWorker()
 class TestClass {
-    property: string = 'propertyvalue';
+    property = 'propertyvalue';
 }
 
 class UndecoratedClass {

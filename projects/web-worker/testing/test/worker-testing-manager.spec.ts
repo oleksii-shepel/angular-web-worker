@@ -4,7 +4,7 @@ import { AngularWebWorker } from '../../worker/src/lib/web-worker-decorator';
 
 @AngularWebWorker()
 class TestClass {
-    property: string = 'propertyvalue';
+    property = 'propertyvalue';
 }
 
 @AngularWebWorker()

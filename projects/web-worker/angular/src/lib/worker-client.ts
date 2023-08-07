@@ -47,7 +47,7 @@ export class WorkerClient<T> {
     /**
      * Whether the worker is active after it is created with the `connect()` method and before it has been terminated by the `destroy()` method
      */
-    private _isConnected: boolean = false;
+    private _isConnected = false;
 
     /**
      * Creates a new `WorkerClient`

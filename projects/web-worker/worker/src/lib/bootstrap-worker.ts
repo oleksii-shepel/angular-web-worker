@@ -6,6 +6,7 @@ import { WebWorkerType, WorkerMessageBus } from 'angular-web-worker/common';
  * Bootstraps the worker class when a new worker script is created in the browser. The class must be decorated with `@AngularWebWorker()`
  * @param worker worker class to bootstrap
  */
+
 export function bootstrapWorker<T>(worker: WebWorkerType<T>) {
 
     const messageBus: WorkerMessageBus = {
@@ -17,7 +18,7 @@ export function bootstrapWorker<T>(worker: WebWorkerType<T>) {
     };
     const workerController = new WorkerController<T>(worker, messageBus);
 
-    onmessage = (ev: MessageEvent) => {
+    self.onmessage = (ev: MessageEvent) => {
         messageBus.onmessage(ev);
     };
 }
